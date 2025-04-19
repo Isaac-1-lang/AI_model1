@@ -1,0 +1,20 @@
+Features used in the crop yield model:
+
+Numeric Features:
+1. Avg_Temperature(°C)
+2. Rainfall(mm)
+3. humidity
+4. ph
+5. nitrogen
+6. phosphorus
+7. potassium
+
+Categorical Features:
+1. soil_type
+   Values: Clay, Sandy, Loamy, Black, Red, Silt, Chalky, Peat
+2. crop_type
+   Values: Rice, Wheat, Maize, Potato, Tomato, Cotton, Sugarcane, Coffee, Tea, Jute
+3. pesticide_use
+   Values: Low, Medium, High
+4. region
+   Values: Kigali, Eastern, Western, Northern, Southern

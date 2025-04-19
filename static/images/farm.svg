@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Sky -->
+    <rect width="800" height="600" fill="#87CEEB"/>
+    
+    <!-- Sun -->
+    <circle cx="700" cy="100" r="50" fill="#FFD700"/>
+    
+    <!-- Clouds -->
+    <circle cx="200" cy="150" r="30" fill="white"/>
+    <circle cx="240" cy="150" r="40" fill="white"/>
+    <circle cx="280" cy="150" r="30" fill="white"/>
+    
+    <!-- Ground -->
+    <rect width="800" height="300" y="300" fill="#90EE90"/>
+    
+    <!-- Farm House -->
+    <rect x="300" y="200" width="200" height="150" fill="#DEB887"/>
+    <polygon points="300,200 400,150 500,200" fill="#8B4513"/>
+    <rect x="380" y="250" width="40" height="60" fill="#4A4A4A"/>
+    
+    <!-- Trees -->
+    <rect x="100" y="250" width="20" height="100" fill="#8B4513"/>
+    <circle cx="110" cy="230" r="40" fill="#228B22"/>
+    
+    <rect x="600" y="250" width="20" height="100" fill="#8B4513"/>
+    <circle cx="610" cy="230" r="40" fill="#228B22"/>
+    
+    <!-- Crops -->
+    <g transform="translate(150,400)">
+        <rect width="500" height="20" fill="#556B2F"/>
+        <line x1="50" y1="0" x2="50" y2="-30" stroke="#556B2F" stroke-width="2"/>
+        <line x1="150" y1="0" x2="150" y2="-30" stroke="#556B2F" stroke-width="2"/>
+        <line x1="250" y1="0" x2="250" y2="-30" stroke="#556B2F" stroke-width="2"/>
+        <line x1="350" y1="0" x2="350" y2="-30" stroke="#556B2F" stroke-width="2"/>
+        <line x1="450" y1="0" x2="450" y2="-30" stroke="#556B2F" stroke-width="2"/>
+    </g>
+</svg> 
