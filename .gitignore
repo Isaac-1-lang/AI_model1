@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pkl
+venv/
+*.csv
+*.json
+*.jsonl
+*.jsonl.gz
+*.jsonl.gz.part
+*.jsonl.gz.part.tmp
+*.jsonl.gz.part.tmp.tmp
+config.bat
+node_modules

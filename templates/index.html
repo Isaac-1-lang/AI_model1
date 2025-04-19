@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rwanda Crop Yield Predictor | Data-Driven Agriculture</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #81c784;
+            --secondary-color: #388e3c;
+            --accent-color: #ffab00;
+            --text-color: #263238;
+            --light-bg: #f5f5f6;
+            --card-bg: #ffffff;
+            --dark-green: #1b5e20;
+            --success-light: #e8f5e9;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 5rem 0 4rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 -Party 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            background-color: rgba(46, 125, 50, 0.1);
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-card {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover .feature-icon {
+            transform: scale(1.1);
+            color: var(--primary-dark);
+        }
+        
+        .prediction-value {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .input-group-text {
+            background-color: rgba(46, 125, 50, 0.1);
+            border: none;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin: 1rem auto;
+            text-align: center;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--text-color) 0%, #1a1a1a 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .tooltip-icon {
+            color: var(--primary-color);
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .range-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--text-color);
+        }
+        
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #64b5f6 0%, #1976d2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .weather-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .crop-card {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .crop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .crop-img {
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .crop-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        .insight-card {
+            background-color: var(--success-light);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .compare-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .compare-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .compare-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .compare-better {
+            color: var(--primary-color);
+        }
+        
+        .compare-worse {
+            color: #f44336;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin-left: 1rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--primary-light);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.15rem;
+            top: 0.25rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 2px solid white;
+        }
+        
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .timeline-content {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .map-container {
+            height: 300px;
+            background-color: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 1rem;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .crop-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .crop-option {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background-color: #e8f5e9;
+            color: var(--primary-dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .crop-option:hover, .crop-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-bottom: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 2px;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            background-color: var(--primary-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 3rem 0;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .footer {
+                clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 100%);
+            }
+            
+            .prediction-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>        
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--dark-green);">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="#">
+                    <i class="fas fa-leaf me-2"></i>Rwanda CropAI
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Ahabanza</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#features"><i class="fas fa-star me-1"></i> Ibiranga</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#predictor"><i class="fas fa-calculator me-1"></i>Teganya</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#insights"><i class="fas fa-chart-bar me-1"></i>Ubushakashatsi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about"><i class="fas fa-info-circle me-1"></i>Ibyerekeye</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container hero-content">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold mb-4">Ongeara umusaruro w'ubuhinzi bwawe</h1>
+                        <p class="lead mb-4">
+                            Koresha ubwenge buhangano(AI-powered) kugirango umusaruro wiyongere kandi ufate ibyemezo byubuhinzi bishingiye ku makuru mu Rwanda</p>
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+                            <a href="#predictor" class="btn btn-light btn-lg px-4 py-3 fw-bold">
+                                <i class="fas fa-seedling me-2"></i> Teganya umusaruro
+                            </a>
+                            <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4 py-3">
+                                <i class="fas fa-play-circle me-2"></i> Bikora bite ?
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Rwandan Farm Landscape" class="img-fluid rounded-3 shadow-lg" style="border: 5px solid rgba(255,255,255,0.2);">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Stats Section -->
+        <section class="py-5 bg-white">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPredictions">1,240+</div>
+                            <div class="stat-label">Umusaruro wiyongere</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-value" id="cropVarieties">12</div>
+                            <div class="stat-label">Ibihingwa</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-value" id="farmersServed">2+</div>
+                            <div class="stat-label">Abahinzi biyikoresheje</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-value" id="accuracyRate">92%</div>
+                            <div class="stat-label">Byizewe</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section id="features" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title">Ibiranga by'ingenzi</h2>
+                <p class="text-center mb-5 mx-auto" style="max-width: 700px;">
+                    Ihuriro ryacu ritanga ibikoresho byuzuye bifasha abahinzi bo mu Rwanda n'abafatanyabikorwa mu buhinzi gufata ibyemezo byuzuye</p>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-robot feature-icon"></i>
+                                <h4 class="mb-3">Bikoreshwa Ubwenge Buhanga</h4>
+                                <p>
+                                    Imashini zacu zigezweho zo kwiga imashini zisesengura ibintu byinshi kugirango zitange umusaruro ushimishije mubihe byihariye.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt feature-icon"></i>
+                                <h4 class="mb-3">Isesengura ry'akarere</h4>
+                                <p>Kubona amakuru yihariye ashingiye ku biranga akarere kagufi ka Rwanda n'ibihe by'umwihariko.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-line feature-icon"></i>
+                                <h4 class="mb-3">Ukobimeze imyaka yashize</h4>
+                                <p>Gerageza kwiyumvisha imikorere y'ibihingwa mugihe kugirango umenye imiterere kandi uhindure gahunda yo gutera.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-cloud-sun-rain feature-icon"></i>
+                                <h4 class="mb-3">Ikirere</h4>
+                                <p>
+                                    Harimo igihe-nyacyo kandi cyateganijwe amakuru yikirere kugirango arusheho guhanura.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-lightbulb feature-icon"></i>
+                                <h4 class="mb-3">Amakuru Yifashishwa</h4>
+                                <p>Kwakira inama mu bikorwa kugira ngo umusaruro wawe wongerwe ushingiye ku byavuye mu guteganiriza.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt feature-icon"></i>
+                                <h4 class="mb-3">Ikoresha Terefone</h4>
+                                <p>Kugera ku biranga byose kuri terefone, byiza cyane ku bahinzi bo mu mirima bafite uburyo buke bwa tekiniki.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="py-5 bg-white">
+            <div class="container">
+                <h2 class="text-center section-title">Uko Bikora</h2>
+                <p class="text-center mb-5 mx-auto" style="max-width: 700px;">Porogaramu yacu yo guteganiriza ihuriza hamwe amakuru atandukanye n'imashini ziherereye kugira ngo itange umusaruro wizewe</p>
+                
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">Intambwe 1</div>
+                                <div class="timeline-content">
+                                    <h5>Gukusanya Amakuru</h5>
+                                    <p>Dukusanya amakuru y'umusaruro washize, imiterere y'ikirere, ibihe by'ubutaka, n'imikorere y'ubuhinzi mu Rwanda hose.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Intambwe 2</div>
+                                <div class="timeline-content">
+                                    <h5>Gutoza Imashini</h5>
+                                    <p>Imashini zacu zo kwiga zitojwe kuri aya makuru kugira ngo zimenyekane imiterere n'umubano hagati y'amakuru atandukanye.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Intambwe 3</div>
+                                <div class="timeline-content">
+                                    <h5>Amakuru y'Ukoresha</h5>
+                                    <p>Utanga ibisobanuro ku bibazo byawe byihariye - ubwoko bw'igihingwa, ahantu, n'ibihe witeze.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Intambwe 4</div>
+                                <div class="timeline-content">
+                                    <h5>Gutanga Umuteganyo</h5>
+                                    <p>Sisitemu yacu isesengura ibyo watanze binyuze mu moderi yigishijwe kugira ngo itange umuteganyo w'umusaruro wihariye.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Intambwe 5</div>
+                                <div class="timeline-content">
+                                    <h5>Ibisobanuro & Inama</h5>
+                                    <p>Uhabwa umuteganyondetse n'amakuru afatika kugira ngo agufashe kongera umusaruro nyakuri.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card p-4 h-100">
+                            <div id="processChart" style="min-height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Prediction Section -->
+        <section id="predictor" class="py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center">
+                        <h2 class="section-title">Guteganya Umusaruro w'Igihingwa</h2>
+                        <p class="mb-5">Injiza ibipimo by'ubuhinzi bwawe kugira ngo ubone umuteganyo w'umusaruro ukoresheje AI</p>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="mb-0"><i class="fas fa-calculator me-2"></i> Ifishi yo Guteganya</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="predictionForm">
+                                    <div class="mb-4">
+                                        <label for="crop" class="form-label">Hitamo Ubwoko bw'Igihingwa</label>
+                                        <div class="crop-selector mb-3">
+                                            <div class="crop-option active" data-value="Maize">Ibigori</div>
+                                            <div class="crop-option" data-value="Rice">Umuceri</div>
+                                            <div class="crop-option" data-value="Beans">Ibishyimbo</div>
+                                            <div class="crop-option" data-value="Cassava">Imyumbati</div>
+                                        </div>
+                                        <select class="form-select" id="crop" required>
+                                            <option value="">Cyangwa uhitemo aha</option>
+                                            <option value="Maize" selected>Ibigori</option>
+                                            <option value="Rice">Umuceri</option>
+                                            <option value="Beans">Ibishyimbo</option>
+                                            <option value="Cassava">Imyumbati</option>
+                                            <option value="Sorghum">Amasaka</option>
+                                        </select>
+                                        <div class="form-text">Hitamo igihingwa cy'ingenzi ushaka gusesengura</div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label for="region" class="form-label">Intara</label>
+                                            <select class="form-select" id="region" required>
+                                                <option value="">Hitamo intara</option>
+                                                <option value="Kigali">Kigali</option>
+                                                <option value="Eastern">Iburasirazuba</option>
+                                                <option value="Northern">Amajyaruguru</option>
+                                                <option value="Southern">Amajyepfo</option>
+                                                <option value="Western">Iburengerazuba</option>
+                                            </select>
+                                            <div class="form-text">Hitamo intara igihingwa gihingwamo</div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label for="district" class="form-label">Akarere (Si ngombwa)</label>
+                                            <select class="form-select" id="district">
+                                                <option value="">Hitamo akarere (si ngombwa)</option>
+                                                <!-- Districts will be populated based on region selection -->
+                                            </select>
+                                            <div class="form-text">Kugira ngo umuteganyo urusheho kwihuta</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label for="rainfall" class="form-label">Imvura Iteganywa (mm)</label>
+                                            <div class="input-group mb-2">
+                                                <input type="range" class="form-range" id="rainfallRange" min="0" max="2000" step="10" value="800">
+                                                <span class="input-group-text range-value">800</span>
+                                                <span class="input-group-text">mm</span>
+                                            </div>
+                                            <input type="number" class="form-control" id="rainfall" required min="0" max="2000" value="800">
+                                            <div class="form-text">Imvura iteganywa mu gihe cyo guhinga</div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label for="temperature" class="form-label">Ubushyuhe bw'Impuzandengo (°C)</label>
+                                            <div class="input-group mb-2">
+                                                <input type="range" class="form-range" id="temperatureRange" min="15" max="35" step="0.5" value="23.5">
+                                                <span class="input-group-text range-value">23.5</span>
+                                                <span class="input-group-text">°C</span>
+                                            </div>
+                                            <input type="number" class="form-control" id="temperature" required min="15" max="35" step="0.1" value="23.5">
+                                            <div class="form-text">Ubushyuhe bw'impuzandengo buteganywa</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label for="soilType" class="form-label">Ubwoko bw'Ubutaka</label>
+                                            <select class="form-select" id="soilType">
+                                                <option value="">Hitamo ubwoko bw'ubutaka</option>
+                                                <option value="Clay">Ubutaka bw'Ibumba</option>
+                                                <option value="Sandy">Ubutaka bw'Umucanga</option>
+                                                <option value="Loamy">Ubutaka bw'Urwondo</option>
+                                                <option value="Silt">Ubutaka bw'Ivumbi</option>
+                                                <option value="Volcanic">Ubutaka bwa Kirunga</option>
+                                            </select>
+                                            <div class="form-text">Hitamo ubwoko bw'ubutaka burangwa</div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label for="altitude" class="form-label">Ubutumburuke (m) <small class="text-muted">(Si ngombwa)</small></label>
+                                            <input type="number" class="form-control" id="altitude" placeholder="Andika ubutumburuke muri metero">
+                                            <div class="form-text">Bifite akamaro ku mpinduka z'ubushyuhe</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Imyuga y'Ubuhinzi</label>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="irrigation">
+                                            <label class="form-check-label" for="irrigation">Kuhira</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="fertilizer">
+                                            <label class="form-check-label" for="fertilizer">Ifumbire Ikoreshwa</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="pesticides">
+                                            <label class="form-check-label" for="pesticides">Imiti y'Udukoko Ikoreshwa</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-calculator me-2"></i> Kubona Umuteganyo
+                                    </button>
+                                </form>
+                                
+                                <div class="alert alert-danger" id="errorAlert" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i> <span id="errorMessage"></span>
+                                </div>
+                                
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Biratangira...</span>
+                                    </div>
+                                    <p class="mt-2">Umuteganyo uratangira...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="result-card" id="resultCard">
+                            <h3 class="mb-4">Ibyavuye mu Iteganiriza</h3>
+                            <div class="text-center">
+                                <i class="fas fa-chart-line feature-icon"></i>
+                                <h4 class="prediction-value" id="predictionValue">0.00 t/ha</h4>
+                                <p id="predictionMessage" class="text-muted"></p>
+                                <div class="mt-3">
+                                    <button class="btn btn-outline-primary" id="savePrediction">
+                                        <i class="fas fa-save me-2"></i> Bika Umuteganyo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="card p-4 text-center h-100">
+                                    <i class="fas fa-chart-bar feature-icon"></i>
+                                    <h5>Imiterere y'Amateka</h5>
+                                    <p class="text-muted">Kureba imiteterere y'umusaruro ku gihe</p>
+                                    <a href="/dashboard/" class="btn btn-outline-primary">Reba Ikibaho</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card p-4 text-center h-100">
+                                    <i class="fas fa-map-marked-alt feature-icon"></i>
+                                    <h5>Isesengura ry'Akarere</h5>
+                                    <p class="text-muted">Gereranya imikorere mu turere</p>
+                                    <a href="/dashboard/" class="btn btn-outline-primary">Reba Isesengura</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Insights Section -->
+        <section id="insights" class="py-5 bg-white">
+            <div class="container">
+                <h2 class="text-center section-title">Ubushakashatsi mu Buhinzi</h2>
+                <p class="text-center mb-5 mx-auto" style="max-width: 700px;">Reba ubumenyi bushingiye ku makuru kongera imikorere y'ubuhinzi bwawe</p>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="weather-card text-center">
+                            <i class="fas fa-cloud-sun-rain weather-icon"></i>
+                            <h5>Iteganyagihe</h5>
+                            <p id="weatherForecast">Amakuru y'ikirere arimo gutangira...</p>
+                        </div>
+                        
+                        <div class="card insight-card">
+                            <div class="card-body">
+                                <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i> Ubumenyi bw'Imuteganyo</h5>
+                                <div id="predictionInsights">
+                                    <p class="text-muted">Kora umuteganyo ngo ubone ubumenyi ku musaruro w'igihingwa cyawe.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Kugereranya Imikorere y'Ibihingwa</h4>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="cropComparisonChart" style="max-height: 300px;"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="compare-card">
+                                    <div class="compare-value compare-better">+15%</div>
+                                    <div class="compare-label">Hejuru y'Impuzandengo y'Akarere</div>
+                                    <p class="mt-2 text-muted">Umusaruro wawe uteganywa ugereranyije n'impuzandengo y'akarere.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="compare-card">
+                                    <div class="compare-value compare-worse">-5%</div>
+                                    <div class="compare-label">Kugereranya no Kugihe gishize</div>
+                                    <p class="mt-2 text-muted">Umusaruro wawe uteganywa ugereranyije n'icyagihe gishize.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title">Ibyerekeye Rwanda CropAI</h2>
+                <p class="text-center mb-5 mx-auto" style="max-width: 700px;">Guha ubushobozi abahinzi bo mu Rwanda ikoranabuhanga kugira ngo bagere ku buhinzi burambye</p>
+                
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="mb-3">Intego Yacu</h4>
+                                <p>Dushaka kuziba icyuho hagati y'ikoranabuhanga n'ubuhinzi mu Rwanda tuha abahinzi ibikoresho bishingiye kuri AI kugirango bafate ibyemezo bishingiye ku makuru, bongere umusaruro, kandi bakomeze kureba niba hari ibiribwa bihagije.</p>
+                                <h4 class="mt-4 mb-3">Icyerekezo Cyacu</h4>
+                                <p>Ejo hazaza aho umuhinzi w'umunyarwanda abasha kubona ikoranabuhanga rigezweho kugira ngo arusheho kwongera umusaruro we kandi agire uruhare mu iterambere ry'ubuhinzi bw'igihugu.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="map-container">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Rwanda Map" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                            <div class="map-overlay">
+                                <h5 class="mb-0">Gukorera mu Ntara Zose z'u Rwanda</h5>
+                                <p class="mb-0 small">Kuva Kigali kugera mu Ntara y'Amajyaruguru, dukorera mu gihugu cyose.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5>Rwanda CropAI</h5>
+                    <p>
+                        Ihuriro rishingiye ku makuru yo kongerera ubushobozi abahinzi bo mu Rwanda hamwe n’umusaruro ukomoka ku bumenyi bwa AI.</p>
+                </div>
+                <div class="col-md-2">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#predictor">Teganya umusaruro</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Tuvugane</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i> support@rwandacropai.com</li>
+                        <li><i class="fas fa-phone me-2"></i> +250 788 123 456</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Kigali, Rwanda</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Follow Us</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4">
+            <div class="text-center">
+                <p>&copy; 2025 Rwanda CropAI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Button -->
+    <a href="#predictor" class="floating-btn">
+        <i class="fas fa-seedling fa-lg"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Sync Range and Number Inputs
+        const rainfallRange = document.getElementById('rainfallRange');
+        const rainfallInput = document.getElementById('rainfall');
+        const rainfallValue = document.querySelector('#rainfallRange + .input-group-text.range-value');
+        const temperatureRange = document.getElementById('temperatureRange');
+        const temperatureInput = document.getElementById('temperature');
+        const temperatureValue = document.querySelector('#temperatureRange + .input-group-text.range-value');
+
+        rainfallRange.addEventListener('input', function() {
+            rainfallInput.value = this.value;
+            rainfallValue.textContent = this.value;
+        });
+
+        rainfallInput.addEventListener('input', function() {
+            rainfallRange.value = this.value;
+            rainfallValue.textContent = this.value;
+        });
+
+        temperatureRange.addEventListener('input', function() {
+            temperatureInput.value = this.value;
+            temperatureValue.textContent = this.value;
+        });
+
+        temperatureInput.addEventListener('input', function() {
+            temperatureRange.value = this.value;
+            temperatureValue.textContent = this.value;
+        });
+
+        // Crop Selector Functionality
+        const cropOptions = document.querySelectorAll('.crop-option');
+        const cropSelect = document.getElementById('crop');
+        cropOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                cropOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                cropSelect.value = this.getAttribute('data-value');
+            });
+        });
+
+        cropSelect.addEventListener('change', function() {
+            cropOptions.forEach(opt => opt.classList.remove('active'));
+            const selectedOption = Array.from(cropOptions).find(opt => opt.getAttribute('data-value') === this.value);
+            if (selectedOption) {
+                selectedOption.classList.add('active');
+            }
+        });
+
+        // District Population Based on Region
+        const districtsByRegion = {
+            Kigali: ['Gasabo', 'Kicukiro', 'Nyarugenge'],
+            Eastern: ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
+            Northern: ['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
+            Southern: ['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango'],
+            Western: ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro']
+        };
+
+        const regionSelect = document.getElementById('region');
+        const districtSelect = document.getElementById('district');
+        regionSelect.addEventListener('change', function() {
+            districtSelect.innerHTML = '<option value="">Select district (optional)</option>';
+            const districts = districtsByRegion[this.value] || [];
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        });
+
+        // Form Submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorAlert = document.getElementById('errorAlert');
+            const resultCard = document.getElementById('resultCard');
+            loadingSpinner.style.display = 'block';
+            errorAlert.style.display = 'none';
+            resultCard.style.display = 'none';
+            
+            const data = {
+                crop: document.getElementById('crop').value,
+                region: document.getElementById('region').value,
+                district: document.getElementById('district').value,
+                rainfall: document.getElementById('rainfall').value,
+                temperature: document.getElementById('temperature').value,
+                soilType: document.getElementById('soilType').value,
+                altitude: document.getElementById('altitude').value,
+                irrigation: document.getElementById('irrigation').checked,
+                fertilizer: document.getElementById('fertilizer').checked,
+                pesticides: document.getElementById('pesticides').checked
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                loadingSpinner.style.display = 'none';
+                
+                if (result.success) {
+                    window.location.href = result.redirect; // Redirect to results page
+                } else {
+                    document.getElementById('errorMessage').textContent = result.error;
+                    errorAlert.style.display = 'block';
+                }
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                document.getElementById('errorMessage').textContent = 'Error making prediction: ' + error;
+                errorAlert.style.display = 'block';
+            }
+        });
+
+        // ApexCharts - Process Chart
+        const processChartOptions = {
+            chart: { type: 'bar', height: 400 },
+            series: [{ name: 'Progress', data: [20, 40, 60, 80, 100] }],
+            xaxis: { categories: ['Data Collection', 'Model Training', 'User Input', 'Prediction', 'Insights'] },
+            colors: ['#2e7d32'],
+            plotOptions: { bar: { horizontal: true } },
+            title: { text: 'Prediction Process', align: 'center' }
+        };
+        const processChart = new ApexCharts(document.querySelector("#processChart"), processChartOptions);
+        processChart.render();
+
+        // Chart.js - Crop Comparison Chart
+        const cropComparisonChart = new Chart(document.getElementById('cropComparisonChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Maize', 'Rice', 'Beans', 'Cassava'],
+                datasets: [{
+                    data: [3.5, 2.8, 2.2, 4.0],
+                    backgroundColor: [
+                        'rgba(46, 125, 50, 0.7)',
+                        'rgba(129, 199, 132, 0.7)',
+                        'rgba(255, 171, 0, 0.7)',
+                        'rgba(56, 142, 60, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(46, 125, 50, 1)',
+                        'rgba(129, 199, 132, 1)',
+                        'rgba(255, 171, 0, 1)',
+                        'rgba(56, 142, 60, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Umusaruro (t/ha)' }
+                }
+            }
+        });
+
+        // Mock Weather Forecast
+        setTimeout(() => {
+            document.getElementById('weatherForecast').textContent = 'Iminsi irindwi ikurikira:Izuba ryiganje, 24°C avg, 50mm imvura iteganyijwe.';
+        }, 1000);
+    </script>
+</body>
+</html> 
