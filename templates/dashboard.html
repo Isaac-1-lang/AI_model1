@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rwanda CropAI Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #81c784;
+            --accent-color: #ffab00;
+            --text-color: #263238;
+            --light-bg: #f5f5f6;
+            --card-bg: #ffffff;
+            --success-light: #e8f5e9;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            background-color: var(--card-bg);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: var(--success-light);
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            font-size: 0.95rem;
+        }
+
+        .table th {
+            background-color: var(--success-light);
+            color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-dark);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-leaf me-2"></i>Rwanda CropAI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#predictor"><i class="fas fa-calculator me-1"></i> Predictor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+        <h1 class="text-center mb-4">Rwanda CropAI Dashboard</h1>
+        <p class="text-center text-muted mb-5">
+            View crop yield trends and your saved predictions to plan your farming better.<br>
+            <span class="fst-italic">Reba ibimenyetso by’ibikomoka by’ibihingwa byawe hano.</span>
+        </p>
+
+        <!-- Charts -->
+        <div class="row g-4 mb-5">
+            <!-- Pie Chart: Crop Yield Distribution -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Crop Yield Distribution</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="cropPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bar Chart: Average Yield by Region -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Average Yield by Region</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="regionBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Predictions Table -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Your Saved Predictions</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Crop</th>
+                            <th>Region</th>
+                            <th>Rainfall (mm)</th>
+                            <th>Temperature (°C)</th>
+                            <th>Predicted Yield (t/ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pred in recent_predictions %}
+                            <tr>
+                                <td>{{ pred.timestamp }}</td>
+                                <td>{{ pred.crop }}</td>
+                                <td>{{ pred.region }}</td>
+                                <td>{{ pred.rainfall }}</td>
+                                <td>{{ pred.temperature }}</td>
+                                <td>{{ pred.prediction|round(2) }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No predictions saved yet. Make a prediction to see results here.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center mt-4">
+            <a href="/#predictor" class="btn btn-primary">
+                <i class="fas fa-calculator me-2"></i> Make a New Prediction
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        console.log('Dashboard page loaded');
+
+        // Pie Chart: Crop Yield Distribution
+        const cropPieCtx = document.getElementById('cropPieChart').getContext('2d');
+        new Chart(cropPieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Maize', 'Rice', 'Beans', 'Cassava'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: [
+                        'rgba(255, 215, 0, 0.7)',  // Maize: Gold
+                        'rgba(0, 128, 0, 0.7)',    // Rice: Green
+                        'rgba(139, 69, 19, 0.7)',  // Beans: Brown
+                        'rgba(218, 165, 32, 0.7)'  // Cassava: Golden Brown
+                    ],
+                    borderColor: [
+                        'rgba(255, 215, 0, 1)',
+                        'rgba(0, 128, 0, 1)',
+                        'rgba(139, 69, 19, 1)',
+                        'rgba(218, 165, 32, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Crop Yield Distribution (%)' }
+                }
+            }
+        });
+        console.log('Crop Pie Chart initialized');
+
+        // Bar Chart: Average Yield by Region
+        const regionBarCtx = document.getElementById('regionBarChart').getContext('2d');
+        new Chart(regionBarCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Kigali', 'Eastern', 'Northern', 'Southern', 'Western'],
+                datasets: [{
+                    label: 'Yield (t/ha)',
+                    data: [2.5, 3.0, 2.8, 2.6, 2.7],
+                    backgroundColor: 'rgba(46, 125, 50, 0.7)',  // Rwanda CropAI Green
+                    borderColor: 'rgba(46, 125, 50, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Average Yield by Region (t/ha)' }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Yield (t/ha)' },
+                        suggestedMax: 5
+                    },
+                    x: { title: { display: true, text: 'Region' } }
+                }
+            }
+        });
+        console.log('Region Bar Chart initialized');
+    </script>
+</body>
+</html>
